@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <title>game</title>
+    <style>
+         h1 {
+            margin-left: 40%;
+        }
+
+        #button {
+            margin-left: 45%;
+        }
+
+        .row {
+            display: flex;
+            justify-content: center;
+        }
+
+        .card {
+            width: 100px;
+            height: 150px;
+            margin: 10px;
+            position: relative;
+            perspective: 1000px;
+            cursor: pointer;
+            border: 2px black solid;
+            border-radius: 15%;
+            overflow: hidden;
+        }
+
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 10px;
+            transform: rotateY(180deg);
+            backface-visibility: hidden;
+            transition: opacity 0.5s;
+        }
+
+        .card.clicked img {
+            opacity: 0;
+        }
+        .card.clicked.clicked1 img {
+            content: url('pic/6.webp');
+            opacity: 1;
+            background-size: 200%;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Game "Memory"</h1>
+    <button id="button">Start</button> 
+    <div class="row">
+        <div class="card" id="card1"><img src="pic/1.png" alt=""></div>
+        <div class="card" id="card2"><img src="pic/2.png" alt=""></div>
+        <div class="card" id="card3"><img src="pic/3.png" alt=""></div>
+        <div class="card" id="card4"><img src="pic/4.png" alt=""></div>
+        <div class="card" id="card5"><img src="pic/5.png" alt=""></div>
+    </div>
+    <div class="row">
+        <div class="card" id="card2"><img src="pic/2.png" alt=""></div>
+        <div class="card" id="card1"><img src="pic/1.png" alt=""></div>
+        <div class="card" id="card5"><img src="pic/5.png" alt=""></div>
+        <div class="card" id="card3"><img src="pic/3.png" alt=""></div>
+        <div class="card" id="card4"><img src="pic/4.png" alt=""></div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            let cards = $(".card");
+            let button = $("#button");
+            let selectedCards = [];
+            let gameStarted = true;
+
+            button.on("click", function () {
+                cards.addClass("clicked clicked1");
+                button.text("Finish");
+            });
+
+            cards.on("click", function () {
+                if (gameStarted) {
+                    $(this).css("border", "2px pink solid")
+                        .removeClass("clicked clicked1")
+                        .siblings().addClass("clicked clicked1");
+                    selectedCards.push($(this));
+
+                    if (selectedCards.length === 2) {
+                        setTimeout(checkMatch, 500);
+                    }
+
+                    if (selectedCards.length === 3) {
+                        if (selectedCards[0].attr("id") === selectedCards[1].attr("id")) {
+                            selectedCards.forEach(function (selectedCard) {
+                                selectedCard.remove();
+                            });
+                            selectedCards = [];
+
+                            if ($('.card:not([data-matched="true"])').length < 2) {
+                                alert("Победа!");
+                            }
+                        } else {
+                            setTimeout(function () {
+                                selectedCards.forEach(function (selectedCard) {
+                                    selectedCard.css("border", "2px black solid")
+                                        .addClass("clicked clicked1");
+                                });
+                                selectedCards = [];
+                            }, 100);
+                        }
+                    }
+                }
+            });
+
+            button.on("click", function () {
+                cards.removeClass("clicked clicked1");
+                button.remove();
+                gameStarted = false;
+            });
+        });
+    </script>
+</body>
+</html>
